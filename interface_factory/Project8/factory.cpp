@@ -15,10 +15,10 @@ c_interface_manager::c_interface_manager( ) {
 	//iterate module list
 	for ( auto entry = root->Flink->Flink->Flink->Flink; entry != root; entry = entry->Flink ) {
 		PLDR_DATA_TABLE_ENTRY	data_table;
-		HMODULE					module_base;
-		uintptr_t				create_interface_export;
-		uintptr_t				create_interface_;
-		uintptr_t*				list_iterator_ptr;
+		HMODULE			module_base;
+		uintptr_t		create_interface_export;
+		uintptr_t		create_interface_;
+		uintptr_t*		list_iterator_ptr;
 		interface_iterator_t*	list_iterator;
 
 		data_table = reinterpret_cast< PLDR_DATA_TABLE_ENTRY >( entry );
