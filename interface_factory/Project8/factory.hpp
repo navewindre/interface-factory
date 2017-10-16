@@ -64,8 +64,8 @@ namespace interfaces
 	class c_interface_manager {
 	public:
 		struct interface_data_t {
-			std::string m_name;
-			std::string m_module;
+			std::string	m_name;
+			std::string	m_module;
 			size_t		m_version;
 			uintptr_t	m_ptr;
 
