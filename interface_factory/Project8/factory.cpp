@@ -58,8 +58,6 @@ c_interface_manager::c_interface_manager( ) {
 
 		data_table = reinterpret_cast< PLDR_DATA_TABLE_ENTRY >( entry );
 		module_base = reinterpret_cast< HMODULE >( data_table->Reserved2[ 0 ] );
-		printf( "module: %s\n", util::unicode_to_ascii( 
-			std::wstring( data_table->FullDllName.Buffer, data_table->FullDllName.Length ) ).c_str( ) );
 		create_interface_export = find_createinterface( module_base );
 
 		if ( !create_interface_export || !is_createinterface_export( create_interface_export ) ) {
