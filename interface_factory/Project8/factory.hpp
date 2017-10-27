@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <fstream>
-#include "vmt.hpp"
+#include <vector>
 #include "util.hpp"
 #include "x86.hpp"
 
