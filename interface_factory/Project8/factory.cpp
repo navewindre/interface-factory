@@ -2,10 +2,45 @@
 
 #include "factory.hpp"
 
-factory::interfaces::c_interface_manager g_factory;
-
 NAMESPACE_REGION( factory )
 NAMESPACE_REGION( interfaces )
+
+//iterate all exports inside of a module and find createinterface
+uintptr_t c_interface_manager::find_createinterface( void* module_ ) {
+	IMAGE_DOS_HEADER*	dos_header;
+	IMAGE_NT_HEADERS*	nt_headers;
+	uintptr_t		export_address;
+	IMAGE_EXPORT_DIRECTORY*	export_dir;
+	const char*		export_name;
+	uintptr_t*		names;
+	uintptr_t*		funcs;
+	uint16_t*		ords;
+
+	dos_header = reinterpret_cast< decltype( dos_header ) >( uintptr_t( module_ ) );
+	nt_headers = reinterpret_cast< decltype( nt_headers ) >( uintptr_t( module_ ) + dos_header->e_lfanew );
+	
+	export_address = nt_headers->OptionalHeader.DataDirectory[ 0 ].VirtualAddress;
+	export_dir = reinterpret_cast< decltype( export_dir ) >( uintptr_t( module_ ) + export_address );
+
+	if ( !export_dir->NumberOfFunctions )
+		return uintptr_t{ };
+
+	names = reinterpret_cast< uintptr_t* >( uintptr_t( module_ ) + export_dir->AddressOfNames );
+	funcs = reinterpret_cast< uintptr_t* >( uintptr_t( module_ ) + export_dir->AddressOfFunctions );
+
+	ords = reinterpret_cast< uint16_t* >( uintptr_t( module_ ) + export_dir->AddressOfNameOrdinals );
+
+	if ( names && funcs && ords ) {
+		for ( size_t i{ }; i < export_dir->NumberOfNames; ++i ) {
+			export_name = reinterpret_cast< const char* >( uintptr_t( module_ ) + names[ i ] );
+			if ( !strcmp( export_name, "CreateInterface" ) ) {
+				return uintptr_t( module_ ) + funcs[ ords[ i ] ];
+			}
+		}
+	}
+
+	return uintptr_t{ };
+}
 
 c_interface_manager::c_interface_manager( ) {
 	auto teb = reinterpret_cast< PTEB >( __readfsdword( uintptr_t( &static_cast< NT_TIB* >( nullptr )->Self ) ) );
@@ -23,7 +58,9 @@ c_interface_manager::c_interface_manager( ) {
 
 		data_table = reinterpret_cast< PLDR_DATA_TABLE_ENTRY >( entry );
 		module_base = reinterpret_cast< HMODULE >( data_table->Reserved2[ 0 ] );
-		create_interface_export = uintptr_t( GetProcAddress( module_base, "CreateInterface" ) );
+		printf( "module: %s\n", util::unicode_to_ascii( 
+			std::wstring( data_table->FullDllName.Buffer, data_table->FullDllName.Length ) ).c_str( ) );
+		create_interface_export = find_createinterface( module_base );
 
 		if ( !create_interface_export || !is_createinterface_export( create_interface_export ) ) {
 			continue;
@@ -58,7 +95,7 @@ c_interface_manager::c_interface_manager( ) {
 				return atoi( ret.c_str( ) );
 			}( );
 
-			m_interfaces.push_back( interface_data_t{ name, module_name, version, ptr } );
+			m_interfaces.emplace_back( interface_data_t{ name, module_name, version, ptr } );
 		}
 	}
 }
