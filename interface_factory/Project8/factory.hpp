@@ -3,8 +3,7 @@
 #include <Windows.h>
 #include <winternl.h>
 #include <fstream>
-#include <vector>
-
+#include "vmt.hpp"
 #include "util.hpp"
 #include "x86.hpp"
 
@@ -13,13 +12,12 @@ NAMESPACE_REGION( factory )
 namespace interfaces
 {
 	struct interface_iterator_t {
-		void*			m_create_fn;
-		char*			m_name;
+		void* m_create_fn;
+		char* m_name;
 
 		interface_iterator_t* m_next;
 	};
 
-	//checked tf2/csgo
 	inline auto follow_createinterface_export( uintptr_t export_ ) {
 		/*
 		.text:006F5F00 CreateInterface proc near
@@ -34,7 +32,6 @@ namespace interfaces
 		return jmp_target;
 	}
 
-	//checked tf2/csgo
 	inline auto find_list_ptr( uintptr_t createinterface ) {
 		/*
 		.text:006F5E90                 push    ebp
@@ -75,6 +72,7 @@ namespace interfaces
 		};
 
 		c_interface_manager( );
+
 		//iterate the interface list to find our desired version
 		template < typename t = void* >
 		t find_interface( const std::string& module_, std::string name ) {
@@ -119,10 +117,8 @@ namespace interfaces
 			return t{ };
 		}
 
-		//dumb the interfaces to a file
 		void dump_interface_list( ) {
 			std::fstream f( "dump.txt" );
-			f.open( "dump.txt" );
 			for ( auto& it : m_interfaces ) {
 				char buf[ 200 ];
 				sprintf_s( buf, 200, "%s version %u in %s at 0x%08x\n",
@@ -136,10 +132,13 @@ namespace interfaces
 		}
 
 	private:
+		uintptr_t find_createinterface( void* module_ );
+
 		std::vector< interface_data_t > m_interfaces;
 	};
 }
 
 END_REGION
 
+extern HMODULE g_dll;
 extern factory::interfaces::c_interface_manager g_factory;
