@@ -100,3 +100,4 @@ c_interface_manager::c_interface_manager( ) {
 
 END_REGION
 END_REGION
+factory::interfaces::c_interface_manager g_factory;
