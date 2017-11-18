@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <Windows.h>
 #include <winternl.h>
 #include <fstream>
