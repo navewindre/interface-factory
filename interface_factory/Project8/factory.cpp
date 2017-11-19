@@ -2,8 +2,7 @@
 
 #include "factory.hpp"
 
-NAMESPACE_REGION( factory )
-NAMESPACE_REGION( interfaces )
+NAMESPACE_REGION( interface_factory )
 
 //iterate all exports inside of a module and find createinterface
 uintptr_t c_interface_manager::find_createinterface( void* module_ ) {
@@ -99,5 +98,4 @@ c_interface_manager::c_interface_manager( ) {
 }
 
 END_REGION
-END_REGION
-factory::interfaces::c_interface_manager g_factory;
+interface_factory::c_interface_manager g_factory;

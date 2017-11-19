@@ -1,6 +1,4 @@
 #pragma once
-#include <inttypes.h>
-#include <string>
 
 #define NAMESPACE_REGION( x ) namespace x {
 #define END_REGION }

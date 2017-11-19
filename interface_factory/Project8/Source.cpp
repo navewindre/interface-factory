@@ -1,10 +1,16 @@
 #include "factory.hpp"
 
-bool __stdcall DllMain( HINSTANCE inst, ulong_t reason, void* reserved ) {
-	if ( reason == DLL_PROCESS_ATTACH ) {
-		DisableThreadLibraryCalls( inst );
-		g_factory.dump_interface_list( );
-	}
+bool __stdcall DllMain( HINSTANCE instance, ulong_t reason, void* reserved ) {
+    switch ( reason ) {
+    case DLL_PROCESS_ATTACH:
+        DisableThreadLibraryCalls( instance );
+        g_factory.dump_interface_list( );
 
-	return true;
+        return true;
+        break;
+
+    default:
+        return true;
+        break;
+    }
 }

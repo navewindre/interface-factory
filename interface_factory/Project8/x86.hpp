@@ -1,5 +1,4 @@
 #pragma once
-#include <inttypes.h>
 
 namespace x86
 {
@@ -11,7 +10,7 @@ namespace x86
 		esp,
 		ebp,
 		esi,
-		edi,
+		edi
 
 		/*
 		x64:
@@ -22,7 +21,7 @@ namespace x86
 		r12,
 		r13,
 		r14,
-		r15,*/
+		r15*/
 	};
 
 	enum instruction : uint8_t {
